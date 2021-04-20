@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .a{
+            height: 100vh;
+        }
+        .b{
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="a"></div>
+    <div class="b"></div>
+    <script>
+        document.addEventListener("scroll",jieliu(fn,500));
+        function debounce(fn,wait){//所谓防抖 就是一直取消事件  直到 没有事件源触发 执行最后一次
+            var time = null;
+            return function(){
+                clearTimeout(time)
+                time = setTimeout(fn,wait);
+            }
+        }
+        // setInterval(()=>{console.log("setInterval",timeout)},200)
+        function fn(){
+            console.log('asdf');
+        }
+
+        //节流   函数进来事件没到就清除新来的事件  事件到了执行  不清除新来的事件
+        function jieliu(fn,wait){
+            var preTime = new Date();
+            return function(){
+                var now = new Date();
+                if(now-preTime>wait){
+                    //执行函数
+                    setTimeout(fn,wait);//过多少秒后回调当前的函数
+                    preTime = now;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
