@@ -9,7 +9,7 @@
             <div class="showlist">
                 <div class="allLength"  :style="style" @mousedown="mousedown($event)" @mousemove="mousemove($event)" @mouseup="mouseup()" > 
                     <div class="index1" v-for="(item,index) in list" :key="index">
-                        <img :src="imgs[index]" alt="" >    
+                        <img :src="imgs[index]" alt="" @load="isload(index)">    
                         <div class="text"><!--对应button-->
                             <h2 class="honor">{{title[index]}}</h2>
                             <ul>
@@ -46,7 +46,8 @@ export default {
             style:{
                 transform:'translate3d(0,0,0)'
             },
-            imgs:[img1,img2,img3,img4,img5,img6,img7,img8,img9],//存放图片的数组
+            imgsload:[img1,img2,img3,img4,img5,img6,img7,img8,img9],
+            imgs:[img1,null,null,null,null,null,null,null,null],//存放图片的数组
             coordinate:[0,-45,-45*1,-45*2,-45*3,-45*4,-45*5,-45*6,-45*7,-45*8]
         }
     },
@@ -79,6 +80,11 @@ export default {
                 }
             }
             
+        },
+        isload(index){
+            if(index<this.imgs.length){
+                this.imgs[index+1] = this.imgsload[index+1];
+            }
         },
         mousedown(e){
             console.log("1按下1",e.screenX)

@@ -5,7 +5,7 @@
             <div class="showbox">
                 <div class="showlist" :style="styleImg" @mousedown="mousedown($event)" @mousemove="mousemove($event)" @mouseup="mouseup()">
                     <div class="item" v-for="(item,index) in count" :key="index">
-                        <div class="left"><img :src="imgs[index]" alt=""></div>
+                        <div class="left"><img :src="imgs[index]" @load="isload(index)" alt=""></div>
                         <div class="right">
                             <div class="content">
                                 <div class="title">
@@ -56,7 +56,8 @@ export default {
             moveUpData:[0,-45,-45*2,-45*3,-45*4,-45*5,-45*6,-45*7,-45*8,-45*9,-45*10,-45*11],//上面图片移动的坐标
             moveDown:[28,-8+28,-8*2+28,-8*3+28,-8*4+28,-8*5+28,-8*6+28,-8*7+28,-8*8+28,-8*9+28,-8*10+28,-8*11+28],//下面图标移动的坐标
             //初始值是36的时候就自动在中间了  单位vw
-            imgs:[img1,img2,img3,img4,img5,img6,img7,img8,img9,img10,img11,img12],
+            imgsload:[img1,img2,img3,img4,img5,img6,img7,img8,img9,img10,img11,img12],
+            imgs:[img1,null,null,null,null,null,null,null,null,null,null,null],
             curIndex:0,//当前的位置索引 这个索引和图片于下面的节点公用
             movepix:0,//移动的像素  正表示右方向  负表示左方向
             pointofdown:0,//鼠标点击按下的时候记录的坐标
@@ -120,6 +121,12 @@ export default {
             this.clickIcon(this.curIndex);
             this.movepix = 0;
             this.downFlag = false;
+        },
+        isload(index){
+            console.log("experienceVue load",index)
+            if(index<this.imgs.length){
+                this.imgs[index+1] = this.imgsload[index+1]; 
+            }
         }
     }
 }
