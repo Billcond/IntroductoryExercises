@@ -3,8 +3,9 @@
         <h2>个人经历</h2>
         <div class="box1">
             <div class="showbox">
-                <div class="showlist" :style="styleImg" @mousedown="mousedown($event)" @mousemove="mousemove($event)" @mouseup="mouseup()">
-                    <div class="item" v-for="(item,index) in count" :key="index">
+                <div class="inin">
+                    <div id = "showall" class="showlist"  :style="styleImg" @mousedown="mousedown($event)"  @mouseup="mouseup() " style = "opacity:1">
+                    <div class="item" :class="{'activeItem':index!=curIndex}" v-for="(item,index) in count" :key="index">
                         <div class="left"><img :src="imgs[index]" @load="isload(index)" alt=""></div>
                         <div class="right">
                             <div class="content">
@@ -17,7 +18,9 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                 </div>
+                
             </div>
         </div>
         <div class="box2">
@@ -67,6 +70,9 @@ export default {
             },
             styleImg:{
                 transform:'translate3d(0,0,0)'
+            },
+            opacity:{
+                opacity:0
             }
         }
     },
@@ -81,53 +87,126 @@ export default {
         mousedown(e){
             this.downFlag = true;
             this.pointofdown = e.screenX;
-            console.log('this.pointofdown',this.pointofdown)
         },
-        mousemove(e){
-            if(this.downFlag){
-                console.log()
-                this.movepix = e.screenX - this.pointofdown;//偏移的像素大小
-                console.log('-----------------',this.movepix)
-                //得到当前像素对应的位置  下边不联动
-                //上边移动
-                let nowPix = this.moveUpData[this.curIndex]*0.01*document.body.scrollWidth;//当前像素的位置
-                let moveTo = nowPix + this.movepix;//需要移动的像素值的大小
-                //判断边界条件  更新移动改的值
-                if(moveTo<this.moveUpData[this.moveUpData.length-1]*0.01*document.body.scrollWidth){
-                    //当前需要移动的像素  小于最小的了就不进行移动了
-                    moveTo = this.moveUpData[this.moveUpData.length-1]*0.01*document.body.scrollWidth;
-                }
-                this.styleImg.transform=`translate3d(${moveTo}px,0,0)`;
-                if(Math.abs(this.movepix)>8*0.01*document.body.scrollWidth){//判断移动量的大小 直接跳转
-                    this.downFlag = false;
-                    this.mouseup();
-                }
-            }
-        },
-        mouseup(){
-            console.log('moveseup',this.movepix)
-            if(this.movepix>0){
-                if(this.curIndex>0){
-                    this.curIndex-=1;
-                }
-            }else if(this.movepix<0){
-                if(this.curIndex<this.moveUpData.length){
-                    this.curIndex+=1;
-                }
-            }else{
-                ;//等于0  不执行
-            }
-
-            this.clickIcon(this.curIndex);
-            this.movepix = 0;
+        mouseup(df){
             this.downFlag = false;
+            if(df==null){
+                var df = this.movepix;    
+            }
+            if(df>0){
+                if(this.curIndex==0){
+                    this.curIndex=1;
+                }
+                this.curIndex--;
+                this.styleImg.transform = `translate3d(${this.moveUpData[this.curIndex]}vw,0,0)`
+                this.styleIcon.transform = `translate3d(${this.moveDown[this.curIndex]}vw,0,0)`
+            }else if(df<0){
+                if(this.curIndex===11){
+                    this.curIndex -= 1;
+                }
+                this.curIndex++;
+                this.styleImg.transform = `translate3d(${this.moveUpData[this.curIndex]}vw,0,0)`
+                this.styleIcon.transform = `translate3d(${this.moveDown[this.curIndex]}vw,0,0)`
+                console.log('...................',this.curIndex,this.moveDown[this.curIndex])   
+            }
+            this.movepix=0;
+            
         },
+        move(e){
+            if(this.downFlag){
+                let df = e.screenX - this.pointofdown
+                let beforeX = this.moveUpData[this.curIndex];
+                this.movepix = df;
+                let offX =beforeX*0.01*document.body.scrollWidth;
+                this.styleImg.transform = `translate3d(${offX}px,0,0)`;
+                offX =offX+ df;
+                this.styleImg.transform = `translate3d(${offX}px,0,0)`;
+                // console.log('相对于触发事件的盒子的原点的坐标',e.offsetX,e.offsetY)
+                // console.log('偏移的X坐标 Y坐标 正负的',e.movementX,e.movementY)
+                // console.log('偏移',e.offsetY)
+                // console.log('总长',18*0.01*document.body.scrollWidth)
+                //console.log(e.layerX,e.layerY)  用这个属性就对了
+                if(e.layerY<5||e.layerY>18*0.01*document.body.scrollWidth){//边界条件
+                    this.downFlag = false;
+                    this.mouseup(df);
+                }
+            }
+        },
+        // mousedown(e){
+        //     this.downFlag = true;
+        //     this.pointofdown = e.screenX;
+        //     console.log('this.pointofdown',this.pointofdown)
+        // },
+        // mousemove(e){
+        //     if(this.downFlag){
+        //         console.log()
+        //         this.movepix = e.screenX - this.pointofdown;//偏移的像素大小
+        //         console.log('-----------------',this.movepix)
+        //         //得到当前像素对应的位置  下边不联动
+        //         //上边移动
+        //         let nowPix = this.moveUpData[this.curIndex]*0.01*document.body.scrollWidth;//当前像素的位置
+        //         let moveTo = nowPix + this.movepix;//需要移动的像素值的大小
+        //         //判断边界条件  更新移动改的值
+        //         if(moveTo<this.moveUpData[this.moveUpData.length-1]*0.01*document.body.scrollWidth){
+        //             //当前需要移动的像素  小于最小的了就不进行移动了
+        //             moveTo = this.moveUpData[this.moveUpData.length-1]*0.01*document.body.scrollWidth;
+        //         }
+        //         this.styleImg.transform=`translate3d(${moveTo}px,0,0)`;
+        //         if(Math.abs(this.movepix)>8*0.01*document.body.scrollWidth){//判断移动量的大小 直接跳转
+        //             this.downFlag = false;
+        //             this.mouseup();
+        //         }
+        //     }
+        // },
+        // mouseup(){
+        //     console.log('moveseup',this.movepix)
+        //     if(this.movepix>0){
+        //         if(this.curIndex>0){
+        //             this.curIndex-=1;
+        //         }
+        //     }else if(this.movepix<0){
+        //         if(this.curIndex<this.moveUpData.length){
+        //             this.curIndex+=1;
+        //         }
+        //     }else{
+        //         ;//等于0  不执行
+        //     }
+
+        //     this.clickIcon(this.curIndex);
+        //     this.movepix = 0;
+        //     this.downFlag = false;
+        // },
         isload(index){
-            console.log("experienceVue load",index)
+            // console.log("experienceVue load",index)
             if(index<this.imgs.length){
                 this.imgs[index+1] = this.imgsload[index+1]; 
             }
-        }
+        },
+        jieliu(fn,delay){
+            let lastTime = new Date();
+            let args = arguments;
+            let timer = null;
+            return function(e){
+                let newTime = new Date();
+                if(newTime-lastTime>delay){
+                    timer = setTimeout(fn(e), delay);
+                    lastTime = newTime
+                }else{
+                    clearTimeout(timer)
+                }
+            }
+        },
+        
+    },
+    mounted(){
+        // this.moveUpData = this.moveUpData.map((item)=>(item*0.01*document.body.scrollWidth));
+        // this.moveDown = this.moveDown.map((item)=>(item*0.01*document.body.scrollWidth));
+        let dom = document.getElementById('showall')
+        // dom.addEventListener('mousemove',this.jieliu($event,this.mousemove,200))
+        // dom.addEventListener('mousemove',(event)=>this.jieliu(event,this.mousemove,200)) //正确
+        // dom.addEventListener('mousemove',function(event){return this.mousemove(event)})  //不正确
+        dom.addEventListener('mousemove',this.jieliu(this.move,20),true) //正确
+         
     }
 }
 </script>
@@ -135,9 +214,12 @@ export default {
     *{
         margin:0;
         padding:0;
+        
+
     }
     .outer{
         background-color: white;
+        overflow: hidden;
     }
     .box1{
         width:100%;/*外面定义了80vw */
@@ -160,14 +242,18 @@ export default {
         height:20vw;
         /* background-color: rgb(190, 133, 26); */
         margin: auto;
-        overflow: hidden;
+    }
+    .box1 .showbox .inin{
+        overflow: visible;
+        height: 100%;
+        width:100%;
     }
     .box1 .showbox .showlist{
         width:50000px;/*足够长的地方 */
         height:100%;
         /* background-color:rgba(165, 42, 42, 0.527); */
         display: flex;
-        transition:all 1s;
+        transition:all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
         overflow:visible
     }
     .box1 .showbox .showlist .item{
@@ -176,6 +262,8 @@ export default {
         height:100%;
         /* background-color: cornflowerblue; */
         display: flex;
+        overflow-x: visible;
+        ;
     }
     .box1 .showbox .showlist .item .left{/**左边放置图片 */
         width:50%;
@@ -207,7 +295,7 @@ export default {
         /* background:chartreuse; */
         border-top-right-radius: 10%;
         border-bottom-right-radius: 10%;
-        
+        background-color: antiquewhite;
         box-shadow:inset 0 0 3px  black;
     }
     .box1 .showbox .showlist .item .right .content .title,.paragraph{
@@ -230,7 +318,7 @@ export default {
         width:96vw;
         height:3%;/*是父亲的30% */
         background-color: rgb(0, 0, 0);
-        transition: all 1s;
+        transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
     }
 
     /*点 */
@@ -243,7 +331,7 @@ export default {
         border-radius: 50%;
         background-color: rgb(18, 161, 114);
         cursor: pointer;
-        transition: all 1s;
+        transition: all 0.5s;
     }
     .box2 .icons .icon .time{
         width:100%;
@@ -264,6 +352,10 @@ export default {
         width:2vw;
         height:2vw;
         background-color: rgb(24, 61, 49);
+    }
+    .activeItem{
+       opacity: 0;
+       transition:opacity 1s;
     }
   
     @media screen and (max-width:500px){
